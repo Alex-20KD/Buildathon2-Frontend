@@ -31,7 +31,7 @@ function createWelcomeMessage(user: AuthUser | null): ChatMessage {
 
   return createMessage(
     "assistant",
-    "Hola 👋 Antes de comenzar, indícame tu cédula de identidad de 10 dígitos para continuar."
+    "Hola 👋 Antes de comenzar, indícame tu cédula ecuatoriana válida para continuar."
   );
 }
 
@@ -204,7 +204,7 @@ export default function ChatAIPage() {
               }}
               placeholder={
                 isIdentifying
-                  ? "Ingresa tu cédula de 10 dígitos"
+                  ? "Ingresa tu cédula ecuatoriana válida"
                   : "Escribe o dicta tu consulta sobre trámites municipales..."
               }
               inputMode={isIdentifying ? "numeric" : undefined}

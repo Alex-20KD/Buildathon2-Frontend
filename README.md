@@ -75,9 +75,10 @@ Actualmente, autenticación, citas, notificaciones y el catálogo general de tr�
 
 ## Autenticación
 
-La versión demostrativa identifica al ciudadano solo con una cédula de 10 dígitos y conserva
-esa sesión en `localStorage`; no solicita contraseña. El asistente pide la cédula antes de
-aceptar consultas y no la envía como texto al endpoint de IA.
+La versión demostrativa identifica al ciudadano con una cédula ecuatoriana válida: comprueba
+la provincia, el tipo de persona natural y el dígito autoverificador. Conserva esa sesión en
+`localStorage`; no solicita contraseña. El asistente pide la cédula antes de aceptar consultas
+y no la envía como texto al endpoint de IA.
 
 Para producción, este flujo debe sustituirse por un endpoint municipal que valide la cédula y
 entregue la identidad del ciudadano (idealmente con un segundo factor de verificación). Una

@@ -56,7 +56,7 @@ export default function LoginPage() {
               inputMode="numeric"
               maxLength={10}
               autoComplete="off"
-              placeholder="1312345678"
+              placeholder="1312345679"
               icon={<IdCard className="h-4 w-4" />}
               error={errors.cedula?.message}
               {...register("cedula", {
@@ -69,7 +69,7 @@ export default function LoginPage() {
 
           <p className="flex items-start gap-2 text-xs leading-5 text-white/75">
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
-            En esta versión demostrativa no necesitas contraseña.
+            Validaremos el dígito verificador. En esta versión demostrativa no necesitas contraseña.
           </p>
 
           <Button type="submit" className="w-full" size="lg" isLoading={isSubmitting}>

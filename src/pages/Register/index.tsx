@@ -60,7 +60,7 @@ export default function RegisterPage() {
           />
           <Input
             label="Cédula"
-            placeholder="1312345678"
+            placeholder="1312345679"
             icon={<IdCard className="h-4 w-4" />}
             error={errors.cedula?.message}
             {...register("cedula")}

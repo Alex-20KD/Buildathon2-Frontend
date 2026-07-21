@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { loginSchema, registerSchema } from "./validation";
+import { isValidEcuadorianCedula, loginSchema, registerSchema } from "./validation";
 
 describe("validation schemas", () => {
   it("accepts a complete registration with matching credentials", () => {
     const result = registerSchema.safeParse({
       firstName: "Ana",
       lastName: "Perez",
-      cedula: "1301234567",
+      cedula: "1301234561",
       email: "ana.perez@example.com",
       phone: "0991234567",
       password: "clave-segura",
@@ -20,7 +20,7 @@ describe("validation schemas", () => {
     const result = registerSchema.safeParse({
       firstName: "Ana",
       lastName: "Perez",
-      cedula: "1301234567",
+      cedula: "1301234561",
       email: "ana.perez@example.com",
       phone: "0991234567",
       password: "clave-segura",
@@ -34,9 +34,9 @@ describe("validation schemas", () => {
     }
   });
 
-  it("accepts a 10-digit cédula to continue without a password", () => {
+  it("accepts a cédula with a valid verifier digit to continue without a password", () => {
     const result = loginSchema.safeParse({
-      cedula: "1312345678",
+      cedula: "1312345679",
     });
 
     expect(result.success).toBe(true);
@@ -48,5 +48,10 @@ describe("validation schemas", () => {
     });
 
     expect(result.success).toBe(false);
+  });
+
+  it("rejects a cédula when its verifier digit is invalid", () => {
+    expect(isValidEcuadorianCedula("1312345678")).toBe(false);
+    expect(loginSchema.safeParse({ cedula: "1312345678" }).success).toBe(false);
   });
 });
