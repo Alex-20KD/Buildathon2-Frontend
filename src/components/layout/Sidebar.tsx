@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   Home,
   FileText,
@@ -7,12 +7,11 @@ import {
   FileInput,
   Bell,
   Settings,
-  LogOut,
+  ArrowLeft,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Logo } from "./Logo";
 import { cn } from "@/utils/cn";
-import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/useToast";
 
 const items = [
   { label: "Inicio", to: "/dashboard", icon: Home },
@@ -25,16 +24,6 @@ const items = [
 ];
 
 export function Sidebar({ className }: { className?: string }) {
-  const { logout } = useAuth();
-  const { showToast } = useToast();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    showToast("Sesión cerrada correctamente", "success");
-    navigate("/login");
-  };
-
   return (
     <aside
       className={cn(
@@ -65,13 +54,13 @@ export function Sidebar({ className }: { className?: string }) {
         ))}
       </nav>
 
-      <button
-        onClick={handleLogout}
-        className="mt-4 flex items-center gap-3 rounded-app px-3 py-2.5 text-sm font-medium text-danger transition-colors hover:bg-danger-light"
+      <Link
+        to="/"
+        className="mt-4 flex items-center gap-3 rounded-app px-3 py-2.5 text-sm font-medium text-text-muted transition-colors hover:bg-primary-light hover:text-primary"
       >
-        <LogOut className="h-[18px] w-[18px]" />
-        Cerrar sesión
-      </button>
+        <ArrowLeft className="h-[18px] w-[18px]" />
+        Volver al inicio
+      </Link>
     </aside>
   );
 }

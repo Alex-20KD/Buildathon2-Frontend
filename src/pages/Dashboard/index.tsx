@@ -14,7 +14,6 @@ import {
 import { StatCard } from "@/components/cards/StatCard";
 import { userProcedures } from "@/data/userProcedures";
 import { notifications } from "@/data/notifications";
-import { mockUserProfile } from "@/data/userProfile";
 
 const quickActions = [
   { label: "Solicitar permiso", to: "/tramites/permiso-funcionamiento", icon: Stamp },
@@ -32,7 +31,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-bold text-text">Hola, {mockUserProfile.firstName} 👋</h1>
+        <h1 className="text-2xl font-bold text-text">Bienvenido/a, Ciudadano/a 👋</h1>
         <p className="mt-1 text-text-muted">
           Este es el resumen de tu actividad en PortoAsiste IA.
         </p>

@@ -66,10 +66,3 @@ export interface UserProfile {
   phone: string;
   avatarUrl?: string;
 }
-
-export interface AuthUser {
-  id: string;
-  cedula: string;
-  fullName: string;
-  email?: string;
-}
