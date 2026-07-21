@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import { LogOut, Menu, UserRound, X } from "lucide-react";
+import { Link, NavLink } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "@/components/ui";
 import { cn } from "@/utils/cn";
-import { useAuth } from "@/hooks/useAuth";
 
 const links = [
   { label: "Inicio", to: "/" },
@@ -16,32 +15,6 @@ const links = [
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
-  const { isAuthenticated, logout, user } = useAuth();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    setOpen(false);
-    navigate("/");
-  };
-
-  const sessionActions = isAuthenticated ? (
-    <>
-      <Link to="/dashboard" onClick={() => setOpen(false)}>
-        <Button variant="secondary" size="sm" className="max-w-48">
-          <UserRound className="h-4 w-4 shrink-0" />
-          <span className="truncate">{user?.fullName}</span>
-        </Button>
-      </Link>
-      <Button variant="ghost" size="sm" onClick={handleLogout}>
-        <LogOut className="h-4 w-4" /> Salir
-      </Button>
-    </>
-  ) : (
-    <Link to="/login" onClick={() => setOpen(false)}>
-      <Button size="sm">Continuar con cédula</Button>
-    </Link>
-  );
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-white/95 backdrop-blur-md">
@@ -65,7 +38,11 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 lg:flex">{sessionActions}</div>
+        <div className="hidden items-center gap-2 lg:flex">
+          <Link to="/dashboard">
+            <Button size="sm">Mi Panel</Button>
+          </Link>
+        </div>
 
         <button
           className="rounded-app p-2 text-text lg:hidden"
@@ -77,7 +54,7 @@ export function Navbar() {
         </button>
       </div>
 
-      {open ? (
+      {open && (
         <div className="border-t border-border bg-white px-4 py-4 lg:hidden">
           <nav className="flex flex-col gap-3">
             {links.map((link) => (
@@ -90,10 +67,12 @@ export function Navbar() {
                 {link.label}
               </NavLink>
             ))}
-            <div className="mt-2 flex flex-col gap-2">{sessionActions}</div>
+            <Link to="/dashboard" onClick={() => setOpen(false)}>
+              <Button className="w-full" size="sm">Mi Panel</Button>
+            </Link>
           </nav>
         </div>
-      ) : null}
+      )}
     </header>
   );
 }
