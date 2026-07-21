@@ -69,12 +69,16 @@ VITE_API_BASE_URL=http://localhost:8000/api
 
 3. Arranca Vite con `npm run dev`. El backend permite por defecto los orígenes `http://localhost:5173` y `http://127.0.0.1:5173`.
 
-Para producción, configura `VITE_API_BASE_URL` en Amplify con la URL pública del backend y agrega el dominio de Amplify a `CORS_ORIGINS` en el backend. Nunca expongas `OPENAI_API_KEY` en el frontend.
+Para producción, configura `VITE_API_BASE_URL` con la URL pública del backend y agrega el dominio público del frontend a `CORS_ORIGINS` en el backend. Nunca expongas `OPENAI_API_KEY` en el frontend.
 
 Actualmente, autenticación, citas, notificaciones y el catálogo general de trámites continúan usando datos simulados porque el backend todavía no expone esos endpoints.
 
 ## Autenticación
 
-El flujo de login/registro es simulado mediante `AuthContext` (persistido en
-`localStorage`). Al conectar el backend, basta actualizar `login`/`logout` en
-`src/context/AuthContext.tsx` para consumir el endpoint real.
+La versión demostrativa identifica al ciudadano solo con una cédula de 10 dígitos y conserva
+esa sesión en `localStorage`; no solicita contraseña. El asistente pide la cédula antes de
+aceptar consultas y no la envía como texto al endpoint de IA.
+
+Para producción, este flujo debe sustituirse por un endpoint municipal que valide la cédula y
+entregue la identidad del ciudadano (idealmente con un segundo factor de verificación). Una
+cédula por sí sola no constituye autenticación segura.

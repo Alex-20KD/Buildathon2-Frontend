@@ -4,7 +4,7 @@ import type { AuthUser } from "@/types";
 export interface AuthContextValue {
   user: AuthUser | null;
   isAuthenticated: boolean;
-  login: (email: string) => void;
+  login: (cedula: string) => AuthUser;
   logout: () => void;
 }
 

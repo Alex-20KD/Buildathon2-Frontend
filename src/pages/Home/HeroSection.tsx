@@ -2,8 +2,11 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Bot, CheckCircle2, FileText, Landmark } from "lucide-react";
 import { Button } from "@/components/ui";
+import { useAuth } from "@/hooks/useAuth";
 
 export function HeroSection() {
+  const { isAuthenticated, user } = useAuth();
+
   return (
     <section className="bg-surface-muted px-4 pt-8 sm:px-6 sm:pt-10 lg:px-8 lg:pt-12">
       <motion.div
@@ -20,20 +23,22 @@ export function HeroSection() {
             <Landmark className="h-3.5 w-3.5" /> PORTOASISTE IA
           </span>
           <h1 className="mt-5 text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-[2.65rem]">
-            Servicios municipales, más cerca de ti.
+            {isAuthenticated ? `Hola, ${user?.fullName}.` : "Servicios municipales, más cerca de ti."}
           </h1>
           <p className="mt-4 max-w-xl text-base leading-7 text-white/80 sm:text-lg">
-            Consulta requisitos, inicia tus trámites y recibe orientación clara para gestionar
-            servicios del GAD Municipal de Portoviejo.
+            {isAuthenticated
+              ? "Tu identificación está activa. Continúa tus trámites o conversa con PortoAsiste IA."
+              : "Consulta requisitos, inicia tus trámites y recibe orientación clara para gestionar servicios del GAD Municipal de Portoviejo."}
           </p>
 
           <div className="mt-7 flex flex-wrap gap-3">
-            <Link to="/tramites">
+            <Link to={isAuthenticated ? "/dashboard" : "/login"}>
               <Button
                 size="lg"
                 className="bg-white text-primary shadow-none hover:bg-primary-soft hover:shadow-app-sm"
               >
-                Ver trámites <ArrowRight className="h-4 w-4" />
+                {isAuthenticated ? "Ir a mi panel" : "Continuar con cédula"}
+                <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
             <Link to="/asistente">

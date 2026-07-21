@@ -1,8 +1,11 @@
 import { Mail, MapPin, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Logo } from "./Logo";
+import { useAuth } from "@/hooks/useAuth";
 
 export function Footer() {
+  const { isAuthenticated, user } = useAuth();
+
   return (
     <footer id="contacto" className="border-t border-border bg-white">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-4 lg:px-8">
@@ -43,16 +46,22 @@ export function Footer() {
         <div>
           <h4 className="mb-3 text-sm font-semibold text-text">Cuenta</h4>
           <ul className="space-y-2 text-sm text-text-muted">
-            <li>
-              <Link to="/login" className="hover:text-primary">
-                Iniciar sesión
-              </Link>
-            </li>
-            <li>
-              <Link to="/registro" className="hover:text-primary">
-                Registrarse
-              </Link>
-            </li>
+            {isAuthenticated ? (
+              <>
+                <li>
+                  <Link to="/dashboard" className="hover:text-primary">
+                    Mi panel
+                  </Link>
+                </li>
+                <li className="text-xs text-success">Sesión activa: {user?.fullName}</li>
+              </>
+            ) : (
+              <li>
+                <Link to="/login" className="hover:text-primary">
+                  Continuar con cédula
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
 

@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 import type { AuthUser } from "@/types";
+import { createLocalCitizen, isStoredCitizen } from "@/utils/citizenIdentity";
 import { AuthContext } from "./auth-context-def";
 
 const STORAGE_KEY = "portoasiste_user";
@@ -7,8 +8,13 @@ const STORAGE_KEY = "portoasiste_user";
 function getStoredUser(): AuthUser | null {
   const stored = localStorage.getItem(STORAGE_KEY);
   if (!stored) return null;
+
   try {
-    return JSON.parse(stored) as AuthUser;
+    const user: unknown = JSON.parse(stored);
+    if (isStoredCitizen(user)) return user;
+
+    localStorage.removeItem(STORAGE_KEY);
+    return null;
   } catch {
     localStorage.removeItem(STORAGE_KEY);
     return null;
@@ -18,15 +24,11 @@ function getStoredUser(): AuthUser | null {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(getStoredUser);
 
-  const login = (email: string) => {
-    // Simulación de autenticación (sin backend todavía)
-    const mockUser: AuthUser = {
-      id: "usr-1",
-      fullName: "María Zambrano",
-      email,
-    };
-    setUser(mockUser);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(mockUser));
+  const login = (cedula: string): AuthUser => {
+    const citizen = createLocalCitizen(cedula);
+    setUser(citizen);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(citizen));
+    return citizen;
   };
 
   const logout = () => {

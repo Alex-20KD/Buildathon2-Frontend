@@ -1,11 +1,10 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import { PublicLayout } from "@/layouts/PublicLayout";
 import { DashboardLayout } from "@/layouts/DashboardLayout";
 import { ProtectedRoute } from "./ProtectedRoute";
 
 import HomePage from "@/pages/Home";
 import LoginPage from "@/pages/Login";
-import RegisterPage from "@/pages/Register";
 import DashboardPage from "@/pages/Dashboard";
 import FormsPage from "@/pages/Dashboard/FormsPage";
 import ProceduresPage from "@/pages/Procedures";
@@ -30,7 +29,7 @@ const router = createBrowserRouter([
     ],
   },
   { path: "/login", element: <LoginPage /> },
-  { path: "/registro", element: <RegisterPage /> },
+  { path: "/registro", element: <Navigate to="/login" replace /> },
   {
     path: "/dashboard",
     element: (

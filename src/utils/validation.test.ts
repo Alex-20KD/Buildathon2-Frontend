@@ -34,10 +34,17 @@ describe("validation schemas", () => {
     }
   });
 
-  it("rejects invalid login credentials before a request is made", () => {
+  it("accepts a 10-digit cédula to continue without a password", () => {
     const result = loginSchema.safeParse({
-      email: "correo-invalido",
-      password: "123",
+      cedula: "1312345678",
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects an incomplete cédula before a session is created", () => {
+    const result = loginSchema.safeParse({
+      cedula: "131234567",
     });
 
     expect(result.success).toBe(false);

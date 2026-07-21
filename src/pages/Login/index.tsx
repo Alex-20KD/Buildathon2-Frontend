@@ -1,8 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Mail, Lock, Eye, EyeOff, Landmark } from "lucide-react";
-import { useState } from "react";
+import { IdCard, Landmark, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button, Input } from "@/components/ui";
 import { loginSchema, type LoginFormValues } from "@/utils/validation";
@@ -10,24 +9,25 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false);
-  const { login } = useAuth();
+  const { isAuthenticated, login } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
-
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "", remember: false },
+    defaultValues: { cedula: "" },
   });
 
-  const onSubmit = async (data: LoginFormValues) => {
-    await new Promise((r) => setTimeout(r, 700));
-    login(data.email);
-    showToast("Bienvenido de nuevo a PortoAsiste IA", "success");
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  const onSubmit = async ({ cedula }: LoginFormValues) => {
+    const citizen = login(cedula);
+    showToast(`Bienvenido/a, ${citizen.fullName}`, "success");
     navigate("/dashboard");
   };
 
@@ -46,63 +46,36 @@ export default function LoginPage() {
             <Landmark className="h-7 w-7" />
           </span>
           <h1 className="text-xl font-semibold text-white">PortoAsiste IA</h1>
-          <p className="mt-1 text-sm text-white/80">Inicia sesión para continuar</p>
+          <p className="mt-1 text-sm text-white/80">Continúa con tu cédula para acceder</p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div className="[&_label]:text-white [&_input]:bg-white/90">
             <Input
-              label="Correo electrónico"
-              type="email"
-              placeholder="tucorreo@ejemplo.com"
-              icon={<Mail className="h-4 w-4" />}
-              error={errors.email?.message}
-              {...register("email")}
+              label="Cédula de identidad"
+              inputMode="numeric"
+              maxLength={10}
+              autoComplete="off"
+              placeholder="1312345678"
+              icon={<IdCard className="h-4 w-4" />}
+              error={errors.cedula?.message}
+              {...register("cedula", {
+                onChange: (event) => {
+                  event.target.value = event.target.value.replace(/\D/g, "").slice(0, 10);
+                },
+              })}
             />
           </div>
 
-          <div className="[&_label]:text-white [&_input]:bg-white/90">
-            <Input
-              label="Contraseña"
-              type={showPassword ? "text" : "password"}
-              placeholder="••••••••"
-              icon={<Lock className="h-4 w-4" />}
-              error={errors.password?.message}
-              rightElement={
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((s) => !s)}
-                  className="text-text-muted"
-                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              }
-              {...register("password")}
-            />
-          </div>
-
-          <div className="flex items-center justify-between text-sm">
-            <label className="flex items-center gap-2 text-white/90">
-              <input type="checkbox" className="h-4 w-4 rounded border-white/40" {...register("remember")} />
-              Recordarme
-            </label>
-            <Link to="#" className="font-medium text-white hover:underline">
-              Recuperar contraseña
-            </Link>
-          </div>
+          <p className="flex items-start gap-2 text-xs leading-5 text-white/75">
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
+            En esta versión demostrativa no necesitas contraseña.
+          </p>
 
           <Button type="submit" className="w-full" size="lg" isLoading={isSubmitting}>
-            Ingresar
+            Continuar
           </Button>
         </form>
-
-        <p className="mt-6 text-center text-sm text-white/80">
-          ¿No tienes una cuenta?{" "}
-          <Link to="/registro" className="font-semibold text-white hover:underline">
-            Regístrate
-          </Link>
-        </p>
       </motion.div>
     </div>
   );

@@ -69,6 +69,7 @@ export interface UserProfile {
 
 export interface AuthUser {
   id: string;
+  cedula: string;
   fullName: string;
-  email: string;
+  email?: string;
 }
