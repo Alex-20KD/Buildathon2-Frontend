@@ -74,7 +74,7 @@ jobs:
               --job-id "$JOB_ID" \
               --query 'job.summary.status' \
               --output text)
-            echo "Estado de Amplify: $status"
+            echo "Consulta $attempt: estado de Amplify: $status"
             case "$status" in
               SUCCEED) exit 0 ;;
               FAILED|CANCELLED) exit 1 ;;

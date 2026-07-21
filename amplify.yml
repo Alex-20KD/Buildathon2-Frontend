@@ -3,27 +3,10 @@ frontend:
   phases:
     preBuild:
       commands:
-        - |
-          if [ -f package-lock.json ]; then
-            npm ci
-          elif [ -f pnpm-lock.yaml ]; then
-            corepack enable && pnpm install --frozen-lockfile
-          elif [ -f yarn.lock ]; then
-            corepack enable && yarn install --immutable
-          else
-            echo "Se necesita package-lock.json, pnpm-lock.yaml o yarn.lock."
-            exit 1
-          fi
+        - npm ci
     build:
       commands:
-        - |
-          if [ -f package-lock.json ]; then
-            npm run build
-          elif [ -f pnpm-lock.yaml ]; then
-            pnpm run build
-          else
-            yarn build
-          fi
+        - npm run build
   artifacts:
     baseDirectory: dist
     files:

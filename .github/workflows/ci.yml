@@ -1,6 +1,7 @@
 name: CI - Frontend
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
     branches: [main]
@@ -13,61 +14,63 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-and-test:
-    name: Construir y probar
+  validate-and-build:
+    name: Validar y construir Vite
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-
-      - name: Verificar proyecto JavaScript
-        run: |
-          test -f package.json || {
-            echo 'No se encontró package.json. Ajusta el workflow al stack definitivo del frontend.'
-            exit 1
-          }
 
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
 
-      - name: Instalar dependencias
+      - name: Instalar dependencias bloqueadas
+        run: npm ci
+
+      - name: Auditar dependencias de producción
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Ejecutar linter
+        run: npm run lint
+
+      - name: Compilar TypeScript y Vite
+        run: npm run build
+
+      - name: Verificar la vista previa de producción
         shell: bash
         run: |
-          if [[ -f package-lock.json ]]; then
-            npm ci
-          elif [[ -f pnpm-lock.yaml ]]; then
-            corepack enable
-            pnpm install --frozen-lockfile
-          elif [[ -f yarn.lock ]]; then
-            corepack enable
-            yarn install --immutable
-          else
-            echo 'No hay archivo de bloqueo. Añade package-lock.json, pnpm-lock.yaml o yarn.lock.'
-            exit 1
-          fi
+          ./node_modules/.bin/vite preview --host 127.0.0.1 --port 4173 > vite-preview.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
 
-      - name: Lint, pruebas y build
-        shell: bash
-        run: |
-          if [[ -f package-lock.json ]]; then
-            run_script() { npm run "$1"; }
-          elif [[ -f pnpm-lock.yaml ]]; then
-            run_script() { pnpm run "$1"; }
-          else
-            run_script() { yarn run "$1"; }
-          fi
-          has_script() {
-            node -e "const scripts=require('./package.json').scripts || {}; process.exit(scripts['$1'] ? 0 : 1)"
-          }
-          if has_script lint; then run_script lint; fi
-          if has_script test; then run_script test; fi
-          run_script build
+          for attempt in {1..20}; do
+            echo "Esperando a Vite (intento $attempt/20)"
+            if curl --fail --silent --show-error http://127.0.0.1:4173/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
 
-      - name: Guardar artefacto de build
+          cat vite-preview.log
+          exit 1
+
+      - name: Guardar registro de vista previa si falla
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: frontend-build
-          path: ${{ vars.FRONTEND_BUILD_DIR || 'dist' }}
+          name: frontend-runtime-log
+          path: vite-preview.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Guardar artefacto de producción
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-vite-dist
+          path: dist/
           if-no-files-found: error
           retention-days: 7
