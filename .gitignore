@@ -11,13 +11,10 @@ node_modules
 dist
 dist-ssr
 *.local
-<<<<<<< HEAD
 .env
-=======
 .next
 next-env.d.ts
 *.tsbuildinfo
->>>>>>> 4ccffdf9d8a2ba0a7b5247ac9cda2953e58a465f
 
 # Editor directories and files
 .vscode/*
