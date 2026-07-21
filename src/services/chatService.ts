@@ -31,7 +31,13 @@ export function getAssistantErrorMessage(error: unknown): string {
     return "No pudimos conectar con el asistente. Inténtalo nuevamente en unos minutos.";
   }
 
+  const detail = error.response?.data?.detail;
+
   if (error.response?.status === 503) {
+    if (typeof detail === "string" && detail.includes("OPENAI_API_KEY")) {
+      return "El asistente IA no está configurado en el servidor. Agrega OPENAI_API_KEY en Render y vuelve a desplegar el backend.";
+    }
+
     return "El asistente IA está temporalmente no disponible. Inténtalo nuevamente más tarde.";
   }
 
@@ -39,8 +45,8 @@ export function getAssistantErrorMessage(error: unknown): string {
     return "El asistente no pudo generar una respuesta en este momento. Inténtalo nuevamente.";
   }
 
-  if (typeof error.response?.data?.detail === "string") {
-    return error.response.data.detail;
+  if (typeof detail === "string") {
+    return detail;
   }
 
   return "No pudimos conectar con el asistente. Verifica que el servicio esté disponible.";

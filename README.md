@@ -77,7 +77,9 @@ VITE_API_BASE_URL=https://buildathon2-backend.onrender.com/api
 
 El cliente también acepta la URL sin `/api` y completa ese prefijo automáticamente. Agrega el dominio público del frontend a `CORS_ORIGINS` en el backend. Nunca expongas `OPENAI_API_KEY` en el frontend.
 
-Actualmente, autenticación, citas, notificaciones y el catálogo general de trámites continúan usando datos simulados porque el backend todavía no expone esos endpoints.
+El archivo `vercel.json` redirige las rutas de React, como `/asistente`, hacia `index.html`. Así se evita el error 404 al abrir o actualizar una ruta publicada directamente.
+
+El chat usa la API FastAPI real. Las citas, notificaciones y el catálogo general de trámites continúan usando datos simulados porque el backend todavía no expone esos endpoints.
 
 ## Autenticación
 

@@ -35,12 +35,12 @@ describe("chatService", () => {
     expect(result.session_id).toBe("session-123");
   });
 
-  it("shows a safe message when the AI provider is unavailable", () => {
+  it("explains how to configure a missing server-side OpenAI key", () => {
     const error = {
       isAxiosError: true,
       response: { status: 503, data: { detail: "OPENAI_API_KEY no está configurada." } },
     };
 
-    expect(getAssistantErrorMessage(error)).toContain("temporalmente no disponible");
+    expect(getAssistantErrorMessage(error)).toContain("OPENAI_API_KEY en Render");
   });
 });
