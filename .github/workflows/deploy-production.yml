@@ -1,0 +1,85 @@
+name: Deploy - Frontend producción
+
+on:
+  workflow_run:
+    workflows: ['CI - Frontend']
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: frontend-production
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+  AMPLIFY_APP_ID: ${{ vars.AMPLIFY_APP_ID }}
+  AMPLIFY_BRANCH: ${{ vars.AMPLIFY_BRANCH || 'main' }}
+
+jobs:
+  deploy:
+    name: Publicar en Amplify
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    environment: production
+    steps:
+      - name: Determinar commit a publicar
+        id: source
+        shell: bash
+        run: echo "sha=${{ github.event.workflow_run.head_sha || github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Verificar configuración
+        shell: bash
+        run: |
+          test -n "$AMPLIFY_APP_ID" || {
+            echo 'Falta la variable de GitHub: AMPLIFY_APP_ID'
+            exit 1
+          }
+
+      - name: Autenticarse en AWS con OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_AMPLIFY_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Iniciar publicación en Amplify
+        id: release
+        env:
+          COMMIT_SHA: ${{ steps.source.outputs.sha }}
+        shell: bash
+        run: |
+          job_id=$(aws amplify start-job \
+            --app-id "$AMPLIFY_APP_ID" \
+            --branch-name "$AMPLIFY_BRANCH" \
+            --job-type RELEASE \
+            --commit-id "$COMMIT_SHA" \
+            --job-reason "CI correcto para $COMMIT_SHA" \
+            --query 'jobSummary.jobId' \
+            --output text)
+          echo "id=$job_id" >> "$GITHUB_OUTPUT"
+
+      - name: Esperar resultado de Amplify
+        env:
+          JOB_ID: ${{ steps.release.outputs.id }}
+        shell: bash
+        run: |
+          for attempt in {1..80}; do
+            status=$(aws amplify get-job \
+              --app-id "$AMPLIFY_APP_ID" \
+              --branch-name "$AMPLIFY_BRANCH" \
+              --job-id "$JOB_ID" \
+              --query 'job.summary.status' \
+              --output text)
+            echo "Estado de Amplify: $status"
+            case "$status" in
+              SUCCEED) exit 0 ;;
+              FAILED|CANCELLED) exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo 'Amplify no terminó dentro de 20 minutos.'
+          exit 1

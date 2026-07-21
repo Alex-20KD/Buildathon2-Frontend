@@ -1,0 +1,73 @@
+name: CI - Frontend
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Construir y probar
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verificar proyecto JavaScript
+        run: |
+          test -f package.json || {
+            echo 'No se encontró package.json. Ajusta el workflow al stack definitivo del frontend.'
+            exit 1
+          }
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar dependencias
+        shell: bash
+        run: |
+          if [[ -f package-lock.json ]]; then
+            npm ci
+          elif [[ -f pnpm-lock.yaml ]]; then
+            corepack enable
+            pnpm install --frozen-lockfile
+          elif [[ -f yarn.lock ]]; then
+            corepack enable
+            yarn install --immutable
+          else
+            echo 'No hay archivo de bloqueo. Añade package-lock.json, pnpm-lock.yaml o yarn.lock.'
+            exit 1
+          fi
+
+      - name: Lint, pruebas y build
+        shell: bash
+        run: |
+          if [[ -f package-lock.json ]]; then
+            run_script() { npm run "$1"; }
+          elif [[ -f pnpm-lock.yaml ]]; then
+            run_script() { pnpm run "$1"; }
+          else
+            run_script() { yarn run "$1"; }
+          fi
+          has_script() {
+            node -e "const scripts=require('./package.json').scripts || {}; process.exit(scripts['$1'] ? 0 : 1)"
+          }
+          if has_script lint; then run_script lint; fi
+          if has_script test; then run_script test; fi
+          run_script build
+
+      - name: Guardar artefacto de build
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: ${{ vars.FRONTEND_BUILD_DIR || 'dist' }}
+          if-no-files-found: error
+          retention-days: 7
