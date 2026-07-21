@@ -17,8 +17,8 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-white/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 border-b border-border bg-white/95 backdrop-blur-md">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Logo />
 
         <nav className="hidden items-center gap-7 lg:flex">
@@ -40,20 +40,21 @@ export function Navbar() {
 
         <div className="hidden lg:block">
           <Link to="/login">
-            <Button size="sm">Iniciar Sesión</Button>
+            <Button size="sm">Iniciar sesión</Button>
           </Link>
         </div>
 
         <button
           className="rounded-app p-2 text-text lg:hidden"
-          onClick={() => setOpen((o) => !o)}
+          onClick={() => setOpen((current) => !current)}
           aria-label="Abrir menú"
+          aria-expanded={open}
         >
           {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
 
-      {open && (
+      {open ? (
         <div className="border-t border-border bg-white px-4 py-4 lg:hidden">
           <nav className="flex flex-col gap-3">
             {links.map((link) => (
@@ -68,12 +69,12 @@ export function Navbar() {
             ))}
             <Link to="/login" onClick={() => setOpen(false)}>
               <Button className="w-full" size="sm">
-                Iniciar Sesión
+                Iniciar sesión
               </Button>
             </Link>
           </nav>
         </div>
-      )}
+      ) : null}
     </header>
   );
 }
