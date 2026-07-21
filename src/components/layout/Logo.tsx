@@ -1,16 +1,19 @@
-import { Landmark } from "lucide-react";
 import { Link } from "react-router-dom";
+import logoPortoviejo from "@/assets/logo-portoviejo-online.png";
 import { cn } from "@/utils/cn";
 
 export function Logo({ className }: { className?: string }) {
   return (
-    <Link to="/" className={cn("flex items-center gap-2", className)}>
-      <span className="flex h-9 w-9 items-center justify-center rounded-app bg-primary text-white">
-        <Landmark className="h-5 w-5" />
-      </span>
-      <span className="text-base font-semibold text-text">
-        PortoAsiste <span className="text-primary">IA</span>
-      </span>
+    <Link
+      to="/"
+      className={cn("group inline-flex shrink-0 items-center", className)}
+      aria-label="Ir al inicio de PortoAsiste IA"
+    >
+      <img
+        src={logoPortoviejo}
+        alt="Alcaldía de Portoviejo, crecemos juntos"
+        className="h-14 w-auto object-contain transition-transform duration-200 group-hover:scale-[1.015] sm:h-16"
+      />
     </Link>
   );
 }
