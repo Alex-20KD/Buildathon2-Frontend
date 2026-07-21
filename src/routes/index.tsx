@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import { PublicLayout } from "@/layouts/PublicLayout";
 import { DashboardLayout } from "@/layouts/DashboardLayout";
+import { ChatLayout } from "@/layouts/ChatLayout";
 import { ProtectedRoute } from "./ProtectedRoute";
 
 import HomePage from "@/pages/Home";
@@ -22,7 +23,6 @@ const router = createBrowserRouter([
       { path: "/", element: <HomePage /> },
       { path: "/tramites", element: <ProceduresPage /> },
       { path: "/tramites/:slug", element: <ProcedureDetailPage /> },
-      { path: "/asistente", element: <ChatAIPage /> },
       { path: "/citas", element: <AppointmentsPage /> },
       { path: "/notificaciones", element: <NotificationsPage /> },
       { path: "/perfil", element: <ProfilePage /> },
@@ -30,6 +30,11 @@ const router = createBrowserRouter([
   },
   { path: "/login", element: <LoginPage /> },
   { path: "/registro", element: <Navigate to="/login" replace /> },
+  {
+    path: "/asistente",
+    element: <ChatLayout />,
+    children: [{ index: true, element: <ChatAIPage /> }],
+  },
   {
     path: "/dashboard",
     element: (

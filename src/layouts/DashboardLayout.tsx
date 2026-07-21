@@ -34,7 +34,7 @@ export function DashboardLayout() {
           </button>
           <span className="ml-3 text-sm font-semibold text-text">PortoAsiste IA</span>
         </div>
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">
+        <main className="flex min-h-0 flex-1 flex-col p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>
       </div>

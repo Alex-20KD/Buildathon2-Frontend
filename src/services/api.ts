@@ -1,9 +1,18 @@
 import axios from "axios";
 
-const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000/api").replace(
-  /\/+$/,
-  ""
-);
+const API_PREFIX = "/api";
+
+/**
+ * Acepta tanto la URL base del backend como la URL completa de su API.
+ * Evita solicitudes a `/chat`, ya que FastAPI expone el recurso en `/api/chat`.
+ */
+export function resolveApiBaseUrl(configuredUrl?: string): string {
+  const apiBaseUrl = (configuredUrl || "http://localhost:8000/api").trim().replace(/\/+$/, "");
+
+  return apiBaseUrl.endsWith(API_PREFIX) ? apiBaseUrl : `${apiBaseUrl}${API_PREFIX}`;
+}
+
+const apiBaseUrl = resolveApiBaseUrl(import.meta.env.VITE_API_BASE_URL);
 
 /** Cliente HTTP centralizado para el backend FastAPI. */
 export const api = axios.create({

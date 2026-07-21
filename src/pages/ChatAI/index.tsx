@@ -10,6 +10,7 @@ import { getAssistantErrorMessage, sendAssistantMessage } from "@/services/chatS
 import type { AuthUser, ChatMessage } from "@/types";
 import { maskCedula } from "@/utils/citizenIdentity";
 import { cedulaSchema } from "@/utils/validation";
+import { cn } from "@/utils/cn";
 import { Button } from "@/components/ui";
 
 function createMessage(role: ChatMessage["role"], content: string): ChatMessage {
@@ -40,7 +41,7 @@ function createSessionId(): string {
 }
 
 export default function ChatAIPage() {
-  const { login, user } = useAuth();
+  const { isAuthenticated, login, user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>(() => [createWelcomeMessage(user)]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -159,8 +160,15 @@ export default function ChatAIPage() {
       : speechRecognitionError || speechSynthesisError || "";
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-4rem)] max-w-7xl flex-col px-4 py-6 sm:px-6 lg:h-screen lg:flex-row lg:gap-6 lg:px-8 lg:py-8">
-      <div className="flex flex-1 flex-col overflow-hidden rounded-app border border-border bg-white shadow-app-sm">
+    <div
+      className={cn(
+        "flex min-h-0 flex-col",
+        isAuthenticated
+          ? "flex-1 xl:flex-row xl:gap-6"
+          : "mx-auto h-[calc(100vh-4rem)] max-w-7xl px-4 py-6 sm:px-6 lg:h-screen lg:flex-row lg:gap-6 lg:px-8 lg:py-8"
+      )}
+    >
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-app border border-border bg-white shadow-app-sm">
         <div className="flex items-center gap-3 border-b border-border p-4">
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-light text-primary">
             {isIdentifying ? <IdCard className="h-5 w-5" /> : <Bot className="h-5 w-5" />}
@@ -244,7 +252,12 @@ export default function ChatAIPage() {
         </div>
       </div>
 
-      <aside className="mt-6 w-full shrink-0 rounded-app border border-border bg-white p-5 shadow-app-sm lg:mt-0 lg:w-72">
+      <aside
+        className={cn(
+          "mt-6 w-full shrink-0 rounded-app border border-border bg-white p-5 shadow-app-sm",
+          isAuthenticated ? "xl:mt-0 xl:w-72" : "lg:mt-0 lg:w-72"
+        )}
+      >
         {isIdentifying ? (
           <div className="rounded-app bg-primary-light p-4">
             <IdCard className="h-6 w-6 text-primary" />

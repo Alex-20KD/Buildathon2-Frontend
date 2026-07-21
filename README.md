@@ -69,7 +69,13 @@ VITE_API_BASE_URL=http://localhost:8000/api
 
 3. Arranca Vite con `npm run dev`. El backend permite por defecto los orígenes `http://localhost:5173` y `http://127.0.0.1:5173`.
 
-Para producción, configura `VITE_API_BASE_URL` con la URL pública del backend y agrega el dominio público del frontend a `CORS_ORIGINS` en el backend. Nunca expongas `OPENAI_API_KEY` en el frontend.
+Para producción, configura en Vercel `VITE_API_BASE_URL` con la URL pública del backend, por ejemplo:
+
+```env
+VITE_API_BASE_URL=https://buildathon2-backend.onrender.com/api
+```
+
+El cliente también acepta la URL sin `/api` y completa ese prefijo automáticamente. Agrega el dominio público del frontend a `CORS_ORIGINS` en el backend. Nunca expongas `OPENAI_API_KEY` en el frontend.
 
 Actualmente, autenticación, citas, notificaciones y el catálogo general de trámites continúan usando datos simulados porque el backend todavía no expone esos endpoints.
 
