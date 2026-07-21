@@ -1,11 +1,13 @@
 import axios from "axios";
 
-/**
- * Cliente HTTP centralizado. La URL base y los interceptores quedan
- * preparados para conectarse con el backend en una fase posterior.
- */
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000/api").replace(
+  /\/+$/,
+  ""
+);
+
+/** Cliente HTTP centralizado para el backend FastAPI. */
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000/api",
+  baseURL: apiBaseUrl,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

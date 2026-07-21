@@ -1,8 +1,8 @@
 # PortoAsiste IA — Frontend
 
 Frontend del sistema inteligente de atención ciudadana del GAD Municipal de Portoviejo.
-Construido con datos simulados (mock) mientras el backend y el agente de IA se integran
-en una fase posterior.
+El asistente de trámites ya se conecta al backend FastAPI; las demás funcionalidades
+mantienen datos simulados hasta que la API exponga sus respectivos endpoints.
 
 ## Stack
 
@@ -21,6 +21,7 @@ en una fase posterior.
 npm run dev       # servidor de desarrollo
 npm run build     # build de producción (tsc -b && vite build)
 npm run lint       # ESLint
+npm run test       # pruebas unitarias
 npm run preview   # previsualiza el build
 ```
 
@@ -50,9 +51,27 @@ src/
 
 ## Datos simulados
 
-Como el backend aún no existe, todas las pantallas funcionan con datos mock ubicados en
-`src/data/`. Los servicios en `src/services/` ya están preparados para reemplazar estos
-datos por llamadas reales a la API sin modificar los componentes de las páginas.
+El chat ya se conecta al backend FastAPI. Las demás pantallas continúan usando datos mock
+ubicados en `src/data/` hasta que la API exponga sus respectivos endpoints. Los servicios en
+`src/services/` centralizan las llamadas para poder ampliar la integración sin modificar los
+componentes de las páginas.
+
+## Conexión con el backend
+
+El chat ya consume la API FastAPI real mediante `POST /api/chat`. Para ejecutarlo localmente:
+
+1. En `Buildathon2-Backend`, crea `.env` desde `.env.example`, configura `OPENAI_API_KEY` y arranca la API en el puerto `8000`.
+2. En este repositorio, crea `.env.local` con:
+
+```env
+VITE_API_BASE_URL=http://localhost:8000/api
+```
+
+3. Arranca Vite con `npm run dev`. El backend permite por defecto los orígenes `http://localhost:5173` y `http://127.0.0.1:5173`.
+
+Para producción, configura `VITE_API_BASE_URL` en Amplify con la URL pública del backend y agrega el dominio de Amplify a `CORS_ORIGINS` en el backend. Nunca expongas `OPENAI_API_KEY` en el frontend.
+
+Actualmente, autenticación, citas, notificaciones y el catálogo general de trámites continúan usando datos simulados porque el backend todavía no expone esos endpoints.
 
 ## Autenticación
 
